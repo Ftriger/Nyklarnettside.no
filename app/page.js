@@ -19,9 +19,14 @@ export default function Home() {
           <div className="logo">
             klar<span>nettside</span>
           </div>
-          <a className="header-cta" href="mailto:post@klarnettside.no">
-            Ta kontakt
-          </a>
+          <nav style={{ display: "flex", alignItems: "center", gap: "18px" }}>
+            <a href="/artikler" style={{ fontSize: "0.9rem", fontWeight: 600, textDecoration: "none", color: "#5B6472" }}>
+              Artikler
+            </a>
+            <a className="header-cta" href="mailto:post@klarnettside.no">
+              Ta kontakt
+            </a>
+          </nav>
         </div>
       </header>
 
@@ -173,6 +178,26 @@ export default function Home() {
                 trenger en enkel, profesjonell nettside raskt og rimelig.
               </p>
             </details>
+            <details className="faq-item">
+              <summary>Holder det ikke med en Facebook- eller Instagram-side?</summary>
+              <p>
+                En sosiale medier-side er nyttig som kanal, men du eier og styrer den ikke selv —
+                det gjør plattformen. En nettside er den ene digitale eiendelen du har full
+                kontroll over, og den er ofte det første et nytt kundeemne sjekker før de tar
+                kontakt.
+              </p>
+            </details>
+            <details className="faq-item">
+              <summary>Kan siden bli funnet på Google?</summary>
+              <p>
+                Ja — alle sider jeg leverer er satt opp med det tekniske grunnlaget for søk
+                (riktige meta-tagger, strukturert data og sitemap). Hvor fort og høyt siden
+                rangerer avhenger også av konkurranse og innhold over tid, men grunnmuren er på
+                plass fra dag én. Se{" "}
+                <a href="/artikler/finn-siden-i-google-og-ai-sok" style={{ color: "#0FB77D", textDecoration: "underline" }}>artikkelen om synlighet</a> for
+                flere konkrete grep.
+              </p>
+            </details>
           </div>
         </div>
       </section>
@@ -238,6 +263,22 @@ const faqJsonLd = {
       acceptedAnswer: {
         "@type": "Answer",
         text: "Tjenesten er laget for nystartede og små bedrifter i Norge som trenger en enkel, profesjonell nettside raskt og rimelig.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Holder det ikke med en Facebook- eller Instagram-side?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "En sosiale medier-side er nyttig som kanal, men du eier og styrer den ikke selv. En nettside er den ene digitale eiendelen du har full kontroll over, og den er ofte det første et nytt kundeemne sjekker før de tar kontakt.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Kan siden bli funnet på Google?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Ja — alle sider leveres med det tekniske grunnlaget for søk (meta-tagger, strukturert data og sitemap). Hvor fort og høyt siden rangerer avhenger også av konkurranse og innhold over tid.",
       },
     },
   ],
