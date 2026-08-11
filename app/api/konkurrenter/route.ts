@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { redis } from "../../../lib/redis";
 
+export const dynamic = "force-dynamic";
+
 function checkAuth(req: NextRequest) {
   const pw = req.headers.get("x-admin-password");
   return pw === process.env.ADMIN_PASSWORD;
@@ -35,4 +37,3 @@ export async function DELETE(req: NextRequest) {
   await redis.del(`konkurrenter:snapshot:${url}`);
   return NextResponse.json({ ok: true });
 }
-
