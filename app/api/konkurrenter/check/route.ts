@@ -1,38 +1,61 @@
 import { NextRequest, NextResponse } from "next/server";
-import { redis } from "../../../lib/redis";
+import { redis } from "../../../../lib/redis";
+import { Resend } from "resend";
+import crypto from "crypto";
 
-function checkAuth(req: NextRequest) {
-  const pw = req.headers.get("x-admin-password");
-  return pw === process.env.ADMIN_PASSWORD;
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+function stripHtml(html: string) {
+  return html
+    .replace(/<script[\s\S]*?<\/script>/gi, "")
+    .replace(/<style[\s\S]*?<\/style>/gi, "")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 export async function GET(req: NextRequest) {
-  if (!checkAuth(req)) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  const authHeader = req.headers.get("authorization");
+  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  }
+
   const urls = (await redis.smembers("konkurrenter:list")) as string[];
-  const data = await Promise.all(
-    urls.map(async (url) => {
-      const snapshot = await redis.get<{ hash: string; checkedAt: string; changedAt: string }>(
+  const changes: string[] = [];
+
+  for (const url of urls) {
+    try {
+      const res = await fetch(url, { headers: { "User-Agent": "Mozilla/5.0" } });
+      const html = await res.text();
+      const text = stripHtml(html);
+      const hash = crypto.createHash("sha256").update(text).digest("hex");
+
+      const prev = await redis.get<{ hash: string; changedAt: string }>(
         `konkurrenter:snapshot:${url}`
       );
-      return { url, ...snapshot };
-    })
-  );
-  return NextResponse.json({ competitors: data });
-}
+      const now = new Date().toISOString();
 
-export async function POST(req: NextRequest) {
-  if (!checkAuth(req)) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  const { url } = await req.json();
-  if (!url) return NextResponse.json({ error: "url mangler" }, { status: 400 });
-  await redis.sadd("konkurrenter:list", url);
-  return NextResponse.json({ ok: true });
-}
+      if (!prev) {
+        await redis.set(`konkurrenter:snapshot:${url}`, { hash, checkedAt: now, changedAt: now });
+      } else if (prev.hash !== hash) {
+        await redis.set(`konkurrenter:snapshot:${url}`, { hash, checkedAt: now, changedAt: now });
+        changes.push(url);
+      } else {
+        await redis.set(`konkurrenter:snapshot:${url}`, { ...prev, checkedAt: now });
+      }
+    } catch (e) {
+      console.error(`Feil ved sjekk av ${url}`, e);
+    }
+  }
 
-export async function DELETE(req: NextRequest) {
-  if (!checkAuth(req)) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  const { url } = await req.json();
-  await redis.srem("konkurrenter:list", url);
-  await redis.del(`konkurrenter:snapshot:${url}`);
-  return NextResponse.json({ ok: true });
-}
+  if (changes.length > 0) {
+    await resend.emails.send({
+      from: "post@klarnettside.no",
+      to: "post@klarnettside.no",
+      subject: `Konkurrentendring oppdaget (${changes.length})`,
+      text: `Disse sidene har endret innhold:\n\n${changes.join("\n")}`,
+    });
+  }
 
+  return NextResponse.json({ checked: urls.length, changed: changes.length });
+}
