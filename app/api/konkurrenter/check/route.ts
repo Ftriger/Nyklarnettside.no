@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { redis } from "@/lib/redis";
+import { redis } from "../../../lib/redis";
 
 function checkAuth(req: NextRequest) {
   const pw = req.headers.get("x-admin-password");
