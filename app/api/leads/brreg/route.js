@@ -28,12 +28,39 @@ export async function GET(request) {
       );
     }
     const data = await res.json();
-    const enheter = (data._embedded?.enheter || []).map((e) => ({
-      navn: e.navn,
-      organisasjonsnummer: e.organisasjonsnummer,
-      epostadresse: e.epostadresse || "",
-      poststed: e.forretningsadresse?.poststed || e.postadresse?.poststed || "",
-    }));
+
+    const PERSONLIGE_DOMENER = new Set([
+      "gmail.com",
+      "hotmail.com",
+      "hotmail.no",
+      "outlook.com",
+      "live.com",
+      "live.no",
+      "yahoo.com",
+      "yahoo.no",
+      "icloud.com",
+      "me.com",
+      "msn.com",
+      "online.no",
+      "getmail.no",
+      "start.no",
+    ]);
+
+    function erFirmaEpost(epost) {
+      if (!epost || !epost.includes("@")) return false;
+      const domene = epost.split("@")[1].toLowerCase().trim();
+      return !PERSONLIGE_DOMENER.has(domene);
+    }
+
+    const enheter = (data._embedded?.enheter || [])
+      .map((e) => ({
+        navn: e.navn,
+        organisasjonsnummer: e.organisasjonsnummer,
+        epostadresse: e.epostadresse || "",
+        poststed: e.forretningsadresse?.poststed || e.postadresse?.poststed || "",
+      }))
+      .filter((e) => erFirmaEpost(e.epostadresse));
+
     return NextResponse.json({ enheter, totalElements: data.page?.totalElements || 0 });
   } catch (e) {
     return NextResponse.json({ error: e.message || "Nettverksfeil" }, { status: 500 });
