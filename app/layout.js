@@ -1,3 +1,5 @@
+import Tracker from "./components/Tracker";
+
 export const metadata = {
   title: "Klarnettside — Enkel nettside for din nye bedrift | Fast pris",
   description:
@@ -15,7 +17,10 @@ export default function RootLayout({ children }) {
           rel="stylesheet"
         />
       </head>
-      <body>{children}</body>
+      <body>
+        <Tracker />
+        {children}
+      </body>
     </html>
   );
 }
