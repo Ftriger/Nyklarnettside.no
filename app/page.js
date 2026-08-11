@@ -2,6 +2,14 @@ export default function Home() {
   return (
     <>
       <style>{css}</style>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(businessJsonLd) }}
+      />
 
       <div className="blob blob-a" aria-hidden="true"></div>
       <div className="blob blob-b" aria-hidden="true"></div>
@@ -187,6 +195,74 @@ export default function Home() {
     </>
   );
 }
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    {
+      "@type": "Question",
+      name: "Hva koster en nettside?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Levering av en enkel, ferdig nettside koster 5000 kr som en fast engangspris. Domeneregistrering er valgfritt til 500 kr, og drift, hosting og løpende endringer koster 2000 kr per måned. Alt er oppgitt på forhånd uten skjulte kostnader.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Trenger jeg teknisk kunnskap?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Nei. Du sender meg tekst og bilder du vil ha med, så bygger jeg hele nettsiden for deg. Du trenger ikke kunne noe om koding, design eller domener.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Når betaler jeg?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Du betaler ikke for selve nettsiden før du har sett resultatet og er fornøyd. Ingen forskuddsbetaling for leveransen.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Hvor lang bindingstid er det?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Ingen skjult bindingstid. Drift og hosting løper månedlig, og endringer avtales fortløpende.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Hvem passer dette for?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Tjenesten er laget for nystartede og små bedrifter i Norge som trenger en enkel, profesjonell nettside raskt og rimelig.",
+      },
+    },
+  ],
+};
+
+const businessJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  name: "Klarnettside",
+  url: "https://klarnettside.no",
+  email: "post@klarnettside.no",
+  description:
+    "Enkle, profesjonelle nettsider til fast pris for nystartede og små bedrifter i Norge.",
+  areaServed: {
+    "@type": "Country",
+    name: "Norge",
+  },
+  priceRange: "5000 kr",
+  makesOffer: {
+    "@type": "Offer",
+    name: "Nettside til fast pris",
+    price: "5000",
+    priceCurrency: "NOK",
+  },
+};
 
 const css = `
 :root{

@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /admin/
 
-Sitemap: https://klarnettside.no/llms.txt
+Sitemap: https://klarnettside.no/sitemap.xml
